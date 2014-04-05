@@ -1,14 +1,21 @@
 /* 
-GetEvictionsX - Define the xrefs table and read 
-the data from a fixed format text file.
+GetEvictionsX - Define the xrefs table and read data from a fixed format
+text file as supplied by NY City DHS. The lines are initally read in accessible
+as a long string, then parsed to get individual variables.
+
+Input: 'T:/Uncom/dhs_evictions_data.txt'
+Output: evictions.xrefs table
 */
 
 create database if not exists evictions;
-drop table if exists evictions.xrefs;
+
+use evictions;
+
+drop table if exists xrefs;
 
 # Table definition
 
-create table if not exists evictions.xrefs (
+create table if not exists xrefs (
 	`xid` int(8) auto_increment primary key,
 	`xref-type` char(1),
 	`xref-cnty-code` char(2),
@@ -41,10 +48,9 @@ create table if not exists evictions.xrefs (
 
 # Read data from fixed field text file;
 
--- Test on subset of data 'T:/Uncom/dhs13.cnty62'
 LOAD DATA LOCAL INFILE 'T:/Uncom/dhs_evictions_data.txt'
 IGNORE
-INTO TABLE `evictions`.`xrefs`
+INTO TABLE xrefs
 LINES TERMINATED BY '\r\n'
 (@l)
  set
@@ -79,37 +85,35 @@ LINES TERMINATED BY '\r\n'
 
 # Clean out any records that are not Xref type
 
-delete from evictions.xrefs where `xref-type` != 'X';
+delete from xrefs where `xref-type` != 'X';
 
 # Original table contains 5 duplicate records
 # Remove them
 
-drop table if exists evictions.dupids;
+drop table if exists dupids;
 
-create table evictions.dupids as
+create table dupids as
 	select distinct `xref-id`, count(*) as cnt, max(xid) as maxid
 	from  evictions.xrefs
 	group by `xref-id`
 	having count(*) > 1
 	order by cnt desc;
 
-select * from evictions.dupids;
+select * from dupids;
 
-delete from evictions.xrefs 
+delete from xrefs 
 	where xid in 
-		(select distinct maxid from evictions.dupids);
+		(select distinct maxid from dupids);
 
-drop table if exists evictions.dupids;
+drop table if exists dupids;
 
-# Clean up xref table 
+# Clean up xref table, create indecies
 
-alter table evictions.xrefs  
+alter table xrefs  
 	drop `resp-tel-area`, drop `resp-tel-exch`, 
 	drop `resp-tel-num`;
-create unique index xrefs on evictions.xrefs (`xref-cnty-code`,	
+
+create unique index xrefs on xrefs (`xref-cnty-code`,	
 	`xref-indx-year`, `xref-indx-numb`,	`xref-seq-num`);
-create unique index xrefsid on evictions.xrefs (`xref-id`);
+create unique index xrefsid on xrefs (`xref-id`);
 
-
-
-select * from xrefs limit 100;

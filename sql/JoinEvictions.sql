@@ -15,6 +15,7 @@ create table evictions.evictions0 as
 #	on c.`case-id`=wc.`warr-id`;
 
 
+
 set @rn := 0;
 create table evictions as
 	select @rn:=@rn+1 as rowid, x.* 

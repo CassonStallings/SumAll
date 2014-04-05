@@ -6,26 +6,26 @@ Code related to SumAll Homelessness project
 SQL Files
 ---------
 
-__ExportCSVProc.sql__
+__ExportCSVProc.sql___
 
-_GetEvictionsC.sql_
+__GetEvictionsC.sql__
 
-_GetEvictionsW.sql_
+__GetEvictionsW.sql__
 
 __GetEvictionsX.sql:__  Define the xrefs table and read data from a fixed format
-text file as supplied by NY City DHS. Each line is initally read in as a long string, then parsed to get individual variables.
+text file as supplied by NY City DHS. 
 
-_CreateEvictions.sql_
+__CreateEvictions.sql__
 
-_JoinEvictions.sql_
 
-_ProcessEvictionAddresses.sql_
 
-_GetGeocodedExits.sql_
+__ProcessEvictionAddresses.sql__
 
-_GetGeocodedAddresses.sql_
+__GetGeocodedExits.sql__
+
+__GetGeocodedAddresses.sql__
 
 
 Python Files
 ------------
-_CleanseAddresses.py_
+__CleanseAddresses.py__
